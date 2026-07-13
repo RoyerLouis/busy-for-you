@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noimageindex, noarchive">
-<title>Busy For You — book mockup</title>
+<title>Busy For You, book mockup</title>
 <style>
   :root{
     --page-w: min(43vw, 66vh);
@@ -240,8 +240,8 @@ const S = [];
 S.push({ l:null, r:`<div class="plate fullbleed"><img src="${P("cover.jpg")}"></div>`, label:"COVER" });
 S.push({ l:blank, r:`<div class="titlepage"><div class="t">BUSY<br>FOR<br>YOU</div><div class="a">LOUIS ROYER</div></div>`, label:"TITLE" });
 S.push({ l:blank, r:`<div class="statement">
-  <p>The photographs in this book were made between 2023 and 2026, in Peru, Japan, France, China, Hong Kong and Singapore. The places matter less than what repeats across them: people held inside the structures built around them &mdash; windows, doorways, platforms, glass &mdash; waiting, or working. I photographed strangers the way architecture sees them: anonymous, patient, briefly framed. Nothing was staged and nothing was asked. The book only watches, from the same distance we all keep in cities, and finds in that distance a kind of tenderness.</p>
-  <p class="fr">Les photographies de ce livre ont &eacute;t&eacute; faites entre 2023 et 2026, au P&eacute;rou, au Japon, en France, en Chine, &agrave; Hong Kong et &agrave; Singapour. Les lieux comptent moins que ce qui s&rsquo;y r&eacute;p&egrave;te&nbsp;: des gens tenus dans les structures b&acirc;ties autour d&rsquo;eux &mdash; fen&ecirc;tres, portes, quais, vitres &mdash; qui attendent, ou qui travaillent. J&rsquo;ai photographi&eacute; des inconnus comme l&rsquo;architecture les voit&nbsp;: anonymes, patients, bri&egrave;vement encadr&eacute;s. Rien n&rsquo;a &eacute;t&eacute; mis en sc&egrave;ne, rien n&rsquo;a &eacute;t&eacute; demand&eacute;. Ce livre ne fait que regarder, &agrave; la distance que nous gardons tous dans les villes, et trouve dans cette distance une forme de tendresse.</p>
+  <p>The photographs in this book were made between 2023 and 2026, in Peru, Japan, France, China, Hong Kong and Singapore. The places matter less than what repeats across them: people held inside the structures built around them (windows, doorways, platforms, glass), waiting, or working. I photographed strangers the way architecture sees them: anonymous, patient, briefly framed. Nothing was staged and nothing was asked. The book only watches, from the same distance we all keep in cities, and finds in that distance a kind of tenderness.</p>
+  <p class="fr">Les photographies de ce livre ont &eacute;t&eacute; faites entre 2023 et 2026, au P&eacute;rou, au Japon, en France, en Chine, &agrave; Hong Kong et &agrave; Singapour. Les lieux comptent moins que ce qui s&rsquo;y r&eacute;p&egrave;te&nbsp;: des gens tenus dans les structures b&acirc;ties autour d&rsquo;eux (fen&ecirc;tres, portes, quais, vitres), qui attendent, ou qui travaillent. J&rsquo;ai photographi&eacute; des inconnus comme l&rsquo;architecture les voit&nbsp;: anonymes, patients, bri&egrave;vement encadr&eacute;s. Rien n&rsquo;a &eacute;t&eacute; mis en sc&egrave;ne, rien n&rsquo;a &eacute;t&eacute; demand&eacute;. Ce livre ne fait que regarder, &agrave; la distance que nous gardons tous dans les villes, et trouve dans cette distance une forme de tendresse.</p>
 </div>`, label:"APPROACH" });
 
 const single = n => S.push({ l:blank, r:plateR(n), label:"PLATE "+n });
@@ -249,11 +249,11 @@ const pair   = (a,b) => S.push({ l:plateL(a), r:plateR(b), label:"PLATES "+a+" |
 
 single(1); single(2); single(3); single(4);
 single(5); single(6);
-S.push({ l:spL(7), r:spR(7), label:"PLATE 7 — PANORAMA SPREAD" });   // level crossing, uncropped
+S.push({ l:spL(7), r:spR(7), label:"PLATE 7, PANORAMA SPREAD" });   // level crossing, uncropped
 single(8); single(9); single(10); single(11); single(12);
 single(13); single(14);
 single(15);
-S.push({ l:spL(16), r:spR(16), label:"PLATE 16 — SPREAD" }); // Kanegafuchi night, uncropped, full page height
+S.push({ l:spL(16), r:spR(16), label:"PLATE 16, SPREAD" }); // Kanegafuchi night, uncropped, full page height
 single(17); single(18);
 single(19);                                                   // color plate, alone
 single(20); single(21);
@@ -282,7 +282,7 @@ for (let g=0; g<3; g++){
   S.push({ l:notesPage(g*12+1), r:notesPage(g*12+7), label:"NOTES "+(g*12+1)+"–"+Math.min(g*12+12,36) });
 }
 
-S.push({ l:blank, r:`<div class="colophon">BUSY FOR YOU<br>36 PHOTOGRAPHS &middot; 2023&ndash;2026<br>MAQUETTE &mdash; NOT FOR SALE</div>`, label:"COLOPHON" });
+S.push({ l:blank, r:`<div class="colophon">BUSY FOR YOU<br>36 PHOTOGRAPHS &middot; 2023&ndash;2026<br>MAQUETTE &middot; NOT FOR SALE</div>`, label:"COLOPHON" });
 
 // spreads -> sheets: sheet j = { front: S[j].r, back: S[j+1] ? S[j+1].l : backcover }
 const book = document.getElementById("book");
