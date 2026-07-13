@@ -163,6 +163,7 @@
   body.editing [contenteditable="true"]{ outline:1px dashed #b9b19e; outline-offset:2px; cursor:text; }
   body.editing .nhead [contenteditable="true"]{ min-width:3em; display:inline-block; }
   body.editing .ntext[contenteditable="true"]{ min-height:1.4em; }
+  #editbtn{ display:none; }   /* private: revealed by JS only on enabled devices (?edit) */
   #editbtn.on{ color:#f0d9a8; border-color:#f0d9a8; }
   #exportbtn{ display:none; }
   body.editing #exportbtn{ display:inline-block; }
@@ -338,6 +339,12 @@ zApply(); counter();
 // ----- interactive caption editing -----
 const editbtn = document.getElementById("editbtn");
 const exportbtn = document.getElementById("exportbtn");
+// Editing UI is private: shown only on devices explicitly enabled with ?edit
+// (and remembered here after). Add ?noedit to a URL to disable on this device.
+const _ep = new URLSearchParams(location.search);
+if (_ep.has("edit"))   localStorage.setItem("bfy-editor", "1");
+if (_ep.has("noedit")) localStorage.removeItem("bfy-editor");
+if (localStorage.getItem("bfy-editor") === "1") editbtn.style.display = "inline-block";
 function setEditable(on){
   document.querySelectorAll(".note [data-f]").forEach(el=> el.setAttribute("contenteditable", on ? "true" : "false"));
 }
