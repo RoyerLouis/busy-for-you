@@ -158,6 +158,8 @@
     font-size: calc(var(--page-w) * 0.015); line-height:1.55; color:#4a4a4a;
     font-weight:300; margin-top:.5em;
   }
+  .ntext.fr{ font-style:italic; color:#6e6e6e; margin-top:.3em; }
+  .ntext:empty{ margin-top:0; }
   body.editing [contenteditable="true"]{ outline:1px dashed #b9b19e; outline-offset:2px; cursor:text; }
   body.editing .nhead [contenteditable="true"]{ min-width:3em; display:inline-block; }
   body.editing .ntext[contenteditable="true"]{ min-height:1.4em; }
@@ -261,13 +263,14 @@ for (let n=25; n<=36; n++) single(n);
 // ----- notes pages: miniatures with editable captions, 6 per page, 3 spreads -----
 const LSC = JSON.parse(localStorage.getItem("bfy-captions")||"{}");
 const CAP = {};
-for (let n=1; n<=36; n++) CAP[n] = Object.assign({place:"",year:"",text:""}, (window.CAPTIONS||{})[n]||{}, LSC[n]||{});
+for (let n=1; n<=36; n++) CAP[n] = Object.assign({place:"",year:"",text_en:"",text_fr:""}, (window.CAPTIONS||{})[n]||{}, LSC[n]||{});
 const noteRow = n => `
   <div class="note" data-n="${n}">
     <div class="thumb"><img loading="lazy" src="${P(IMG[n])}"></div>
     <div class="nmeta">
       <div class="nhead"><span class="nplace" data-f="place">${CAP[n].place}</span><span class="nyear" data-f="year">${CAP[n].year}</span></div>
-      <div class="ntext" data-f="text">${CAP[n].text}</div>
+      <div class="ntext" data-f="text_en">${CAP[n].text_en}</div>
+      <div class="ntext fr" data-f="text_fr">${CAP[n].text_fr}</div>
     </div>
   </div>`;
 const notesPage = from => {
@@ -356,9 +359,10 @@ exportbtn.onclick = ()=>{
   const out = {};
   document.querySelectorAll(".note").forEach(nd=>{
     out[nd.dataset.n] = {
-      place: nd.querySelector('[data-f="place"]').innerText.trim(),
-      year:  nd.querySelector('[data-f="year"]').innerText.trim(),
-      text:  nd.querySelector('[data-f="text"]').innerText.trim()
+      place:   nd.querySelector('[data-f="place"]').innerText.trim(),
+      year:    nd.querySelector('[data-f="year"]').innerText.trim(),
+      text_en: nd.querySelector('[data-f="text_en"]').innerText.trim(),
+      text_fr: nd.querySelector('[data-f="text_fr"]').innerText.trim()
     };
   });
   const blob = new Blob(["window.CAPTIONS = " + JSON.stringify(out, null, 2) + ";\n"], {type:"text/javascript"});
