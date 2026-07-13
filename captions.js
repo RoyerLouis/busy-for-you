@@ -2,7 +2,7 @@ window.CAPTIONS = {
   "1": {
     "place": "OSAKA, JAPAN",
     "year": "2024",
-    "text_en": "Present, absent, suspended — he'll be there for the next rain, busy waiting for you.",
+    "text_en": "Present, absent, suspended, he'll be there for the next rain, busy waiting for you.",
     "text_fr": "Présent, absent, en suspens, il sera là pour la prochaine pluie, occupé à t'attendre."
   },
   "2": {
@@ -44,7 +44,7 @@ window.CAPTIONS = {
   "8": {
     "place": "TOKYO, JAPAN",
     "year": "2024",
-    "text_en": "Morning or evening, waking or rest — calm, almost.",
+    "text_en": "Morning or evening, waking or rest, calm, almost.",
     "text_fr": "Matin ou soir, éveil ou repos, le calme, presque."
   },
   "9": {
