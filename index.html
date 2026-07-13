@@ -128,7 +128,7 @@
     line-height: 1.95; letter-spacing:.02em;
     text-align: justify;
   }
-  .statement p.fr{
+  .statement p.alt{
     margin-top: 8%; font-style: italic; color:#6e6e6e;
   }
   .colophon{
@@ -158,7 +158,7 @@
     font-size: calc(var(--page-w) * 0.015); line-height:1.55; color:#4a4a4a;
     font-weight:300; margin-top:.5em;
   }
-  .ntext.fr{ font-style:italic; color:#6e6e6e; margin-top:.3em; }
+  .ntext.alt{ font-style:italic; color:#6e6e6e; margin-top:.3em; }
   .ntext:empty{ margin-top:0; }
   body.editing [contenteditable="true"]{ outline:1px dashed #b9b19e; outline-offset:2px; cursor:text; }
   body.editing .nhead [contenteditable="true"]{ min-width:3em; display:inline-block; }
@@ -240,8 +240,8 @@ const S = [];
 S.push({ l:null, r:`<div class="plate fullbleed"><img src="${P("cover.jpg")}"></div>`, label:"COVER" });
 S.push({ l:blank, r:`<div class="titlepage"><div class="t">BUSY<br>FOR<br>YOU</div><div class="a">LOUIS ROYER</div></div>`, label:"TITLE" });
 S.push({ l:blank, r:`<div class="statement">
-  <p>The photographs in this book were made between 2023 and 2026, in Peru, Japan, France, China, Hong Kong and Singapore. The places matter less than what repeats across them: people held inside the structures built around them (windows, doorways, platforms, glass), waiting, or working. I photographed strangers the way architecture sees them: anonymous, patient, briefly framed. Nothing was staged and nothing was asked. The book only watches, from the same distance we all keep in cities, and finds in that distance a kind of tenderness.</p>
-  <p class="fr">Les photographies de ce livre ont &eacute;t&eacute; faites entre 2023 et 2026, au P&eacute;rou, au Japon, en France, en Chine, &agrave; Hong Kong et &agrave; Singapour. Les lieux comptent moins que ce qui s&rsquo;y r&eacute;p&egrave;te&nbsp;: des gens tenus dans les structures b&acirc;ties autour d&rsquo;eux (fen&ecirc;tres, portes, quais, vitres), qui attendent, ou qui travaillent. J&rsquo;ai photographi&eacute; des inconnus comme l&rsquo;architecture les voit&nbsp;: anonymes, patients, bri&egrave;vement encadr&eacute;s. Rien n&rsquo;a &eacute;t&eacute; mis en sc&egrave;ne, rien n&rsquo;a &eacute;t&eacute; demand&eacute;. Ce livre ne fait que regarder, &agrave; la distance que nous gardons tous dans les villes, et trouve dans cette distance une forme de tendresse.</p>
+  <p>Les photographies de ce livre ont &eacute;t&eacute; faites entre 2023 et 2026, au P&eacute;rou, au Japon, en France, en Chine, &agrave; Hong Kong et &agrave; Singapour. Les lieux comptent moins que ce qui s&rsquo;y r&eacute;p&egrave;te&nbsp;: des gens tenus dans les structures b&acirc;ties autour d&rsquo;eux (fen&ecirc;tres, portes, quais, vitres), qui attendent, ou qui travaillent. J&rsquo;ai photographi&eacute; des inconnus comme l&rsquo;architecture les voit&nbsp;: anonymes, patients, bri&egrave;vement encadr&eacute;s. Rien n&rsquo;a &eacute;t&eacute; mis en sc&egrave;ne, rien n&rsquo;a &eacute;t&eacute; demand&eacute;. Ce livre ne fait que regarder, &agrave; la distance que nous gardons tous dans les villes, et trouve dans cette distance une forme de tendresse.</p>
+  <p class="alt">The photographs in this book were made between 2023 and 2026, in Peru, Japan, France, China, Hong Kong and Singapore. The places matter less than what repeats across them: people held inside the structures built around them (windows, doorways, platforms, glass), waiting, or working. I photographed strangers the way architecture sees them: anonymous, patient, briefly framed. Nothing was staged and nothing was asked. The book only watches, from the same distance we all keep in cities, and finds in that distance a kind of tenderness.</p>
 </div>`, label:"APPROACH" });
 
 const single = n => S.push({ l:blank, r:plateR(n), label:"PLATE "+n });
@@ -269,8 +269,8 @@ const noteRow = n => `
     <div class="thumb"><img loading="lazy" src="${P(IMG[n])}"></div>
     <div class="nmeta">
       <div class="nhead"><span class="nplace" data-f="place">${CAP[n].place}</span><span class="nyear" data-f="year">${CAP[n].year}</span></div>
-      <div class="ntext" data-f="text_en">${CAP[n].text_en}</div>
-      <div class="ntext fr" data-f="text_fr">${CAP[n].text_fr}</div>
+      <div class="ntext" data-f="text_fr">${CAP[n].text_fr}</div>
+      <div class="ntext alt" data-f="text_en">${CAP[n].text_en}</div>
     </div>
   </div>`;
 const notesPage = from => {
