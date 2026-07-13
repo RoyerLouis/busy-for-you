@@ -1,0 +1,12 @@
+# Incomplete browser downloads
+*.crdownload
+*.part
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor junk
+*.swp
+*~

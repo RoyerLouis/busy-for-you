@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive">
+<title>Busy For You — book mockup</title>
+<style>
+  :root{
+    --page-w: min(43vw, 66vh);
+    --page-h: var(--page-w);   /* square format */
+    --paper: #f7f5f1;
+    --ink: #222;
+    --turn: 0.9s;
+  }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+  html,body{ height:100%; }
+  body{
+    background: radial-gradient(ellipse at 50% 35%, #3a3835 0%, #232120 60%, #171615 100%);
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    overflow:hidden; color:#8b877f;
+  }
+  #book{
+    position:relative;
+    width: calc(var(--page-w) * 2);
+    height: var(--page-h);
+    perspective: none;   /* only applied while turning, so static pages render crisp */
+  }
+  #book.turning{ perspective: 2600px; }
+  .board{
+    position:absolute; top:0; width:var(--page-w); height:100%;
+    background:#111; border-radius:2px;
+    box-shadow: 0 30px 40px rgba(0,0,0,.55);
+  }
+  .board.left{ left:0; }
+  .board.right{ right:0; }
+
+  .sheet{
+    position:absolute; top:0; left:50%;
+    width: var(--page-w); height: 100%;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    transition: transform var(--turn) cubic-bezier(.35,.1,.25,1);
+    cursor:pointer;
+  }
+  .sheet.turned{ transform: rotateY(-180deg); }
+  .face{
+    position:absolute; inset:0;
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    background: var(--paper);
+    overflow:hidden;
+  }
+  .face.back{ transform: rotateY(180deg); }
+
+  /* gutter crease */
+  .face.front::after, .face.back::after{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:5;
+  }
+  .face.front::after{
+    background: linear-gradient(to right,
+      rgba(0,0,0,.28) 0%, rgba(0,0,0,.12) 3%, rgba(0,0,0,.045) 8%, rgba(0,0,0,0) 16%,
+      rgba(0,0,0,0) 96%, rgba(0,0,0,.05) 100%);
+  }
+  .face.back::after{
+    background: linear-gradient(to left,
+      rgba(0,0,0,.28) 0%, rgba(0,0,0,.12) 3%, rgba(0,0,0,.045) 8%, rgba(0,0,0,0) 16%,
+      rgba(0,0,0,0) 96%, rgba(0,0,0,.05) 100%);
+  }
+  #spine{
+    position:absolute; top:-1%; bottom:-1%; left:50%; width:2px; margin-left:-1px;
+    background: linear-gradient(to bottom, rgba(0,0,0,.5), rgba(0,0,0,.65), rgba(0,0,0,.5));
+    z-index: 500; pointer-events:none;
+  }
+
+  /* single plate with margins (wider margin at gutter) */
+  .plate{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    padding: 7% 8% 9% 10%;
+  }
+  .face.back .plate{ padding: 7% 10% 9% 8%; }
+  .plate img{
+    max-width:100%; max-height:100%;
+    object-fit:contain;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.04);
+  }
+  .fullbleed{ padding:0; }
+  .fullbleed img{ width:100%; height:100%; object-fit:cover; max-width:none; max-height:none; box-shadow:none; }
+
+  /* image spanning the whole double spread, NEVER cropped:
+     contained in the 2W x H spread box, centered on the gutter */
+  .sp{ position:absolute; inset:0; overflow:hidden; background:var(--paper); }
+  .sp .wrap{
+    position:absolute; top:0; left:0;
+    width: calc(var(--page-w) * 2); height:100%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sp.righthalf .wrap{ left: calc(var(--page-w) * -1); }
+  .sp .wrap img{ width:100%; height:100%; object-fit:contain; }  /* scales up to fill the spread, never crops */
+
+  .folio{
+    position:absolute; bottom:3.2%; font-size: calc(var(--page-w) * 0.022);
+    letter-spacing:.12em; color:#9a958c; z-index:6;
+  }
+  .folio.recto{ right:8%; }
+  .folio.verso{ left:8%; }
+
+  .titlepage{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+    padding: 12% 14%; color: var(--ink);
+  }
+  .titlepage .t{ font-weight:200; letter-spacing:.18em; font-size: calc(var(--page-w) * 0.085); line-height:1.35; }
+  .titlepage .a{ margin-top: 12%; font-weight:300; letter-spacing:.22em; font-size: calc(var(--page-w) * 0.028); color:#666; }
+
+  .statement{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:center;
+    padding: 13% 14% 13% 16%;
+    color:#3a3a3a;
+  }
+  .statement p{
+    font-weight:300;
+    font-size: calc(var(--page-w) * 0.0195);
+    line-height: 1.95; letter-spacing:.02em;
+    text-align: justify;
+  }
+  .statement p.fr{
+    margin-top: 8%; font-style: italic; color:#6e6e6e;
+  }
+  .colophon{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    padding-bottom:12%; color:#777; font-weight:300;
+    font-size: calc(var(--page-w) * 0.022); letter-spacing:.16em; text-align:center; line-height:2.2;
+  }
+  .backcover{ position:absolute; inset:0; background:#191919; display:flex; align-items:center; justify-content:center; }
+  .backcover .mark{ color:#555; font-weight:200; letter-spacing:.3em; font-size: calc(var(--page-w) * 0.028); }
+
+  /* notes / plate-index pages */
+  .notes{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; gap:2%;
+    padding: 8% 9% 9% 11%;
+  }
+  .face.back .notes{ padding: 8% 11% 9% 9%; }
+  .note{ display:flex; gap:4%; flex:1; min-height:0; align-items:center; }
+  .note .thumb{ flex:0 0 17%; height:86%; display:flex; align-items:center; justify-content:center; }
+  .note .thumb img{ max-width:100%; max-height:100%; object-fit:contain; }
+  .nmeta{ flex:1; min-width:0; }
+  .nhead{ font-size: calc(var(--page-w) * 0.0155); letter-spacing:.12em; color:#555; }
+  .nhead .nplace{ text-transform:uppercase; }
+  .nhead .nyear{ color:#999; margin-left:.9em; }
+  .ntext{
+    font-size: calc(var(--page-w) * 0.015); line-height:1.55; color:#4a4a4a;
+    font-weight:300; margin-top:.5em;
+  }
+  body.editing [contenteditable="true"]{ outline:1px dashed #b9b19e; outline-offset:2px; cursor:text; }
+  body.editing .nhead [contenteditable="true"]{ min-width:3em; display:inline-block; }
+  body.editing .ntext[contenteditable="true"]{ min-height:1.4em; }
+  #editbtn.on{ color:#f0d9a8; border-color:#f0d9a8; }
+  #exportbtn{ display:none; }
+  body.editing #exportbtn{ display:inline-block; }
+
+  #hud{
+    margin-top: 3.2vh; display:flex; gap:2.5em; align-items:center;
+    font-size: 12px; letter-spacing:.15em; user-select:none;
+  }
+  #hud button{
+    background:none; border:1px solid #55524c; color:#8b877f;
+    padding:.45em 1.1em; letter-spacing:.15em; font-size:11px; cursor:pointer; border-radius:2px;
+  }
+  #hud button:hover{ color:#d8d4cc; border-color:#8b877f; }
+  #counter{ min-width:11em; text-align:center; }
+  .exit-link{
+    position:fixed; top:22px; left:22px; z-index:1000;
+    width:42px; height:42px; display:grid; place-items:center;
+    color:#aaa59d; text-decoration:none; border-radius:50%;
+    transition:color .2s ease, background-color .2s ease, transform .2s ease;
+  }
+  .exit-link::before, .exit-link::after{
+    content:""; position:absolute; width:22px; height:1px;
+    background:currentColor;
+  }
+  .exit-link::before{ transform:rotate(45deg); }
+  .exit-link::after{ transform:rotate(-45deg); }
+  .exit-link:hover{ color:#f7f5f1; background:rgba(255,255,255,.08); transform:rotate(90deg); }
+  .exit-link:focus-visible{ outline:1px solid #d8d4cc; outline-offset:3px; }
+</style>
+</head>
+<body>
+
+<a class="exit-link" href="https://louisroyer.myportfolio.com/busy-for-you" target="_top" aria-label="Exit interactive book"></a>
+
+<div id="book">
+  <div class="board left"></div>
+  <div class="board right"></div>
+  <div id="spine"></div>
+</div>
+
+<div id="hud">
+  <button id="prev">&#8592; BACK</button>
+  <div id="counter"></div>
+  <button id="next">TURN &#8594;</button>
+  <button id="editbtn">&#9998; EDIT NOTES</button>
+  <button id="exportbtn">&#8595; SAVE CAPTIONS FILE</button>
+</div>
+
+<script src="captions.js"></script>
+<script>
+const P = f => `pages/${f}`;
+const IMG = {
+   1:"01_0111241010.jpg",       2:"02_0106261901.jpg",       3:"03_0106261638.jpg",
+   4:"04_0106261747.jpg",       5:"05_0211240840.jpg",       6:"06_1311240404.jpg",
+   7:"07_1411240855.jpg",       8:"08_1811241111.jpg",       9:"09_1201242201.jpg",
+  10:"10_2501241303.jpg",      11:"11__dsf9092_2.jpg",      12:"12_0811241116.jpg",
+  13:"13_0811241119.jpg",      14:"14_0211240154.jpg",      15:"15_1711241513.jpg",
+  16:"16_1411240856.jpg",      17:"17_1601241835.jpg",      18:"18_0501241604.jpg",
+  19:"19_0311250708_color.jpg",20:"20__dsf6872_dxo.jpg",    21:"21__dsf6824_dxo.jpg",
+  22:"22__dsf6709_dxo.jpg",    23:"23_2510250501.jpg",      24:"24_0211250608.jpg",
+  25:"25__dsf4768_dxo.jpg",    26:"26__dsf5828_dxo.jpg",    27:"27__dsf6345_dxo.jpg",
+  28:"28__dsf7779_dxo.jpg",    29:"29_1511250533_bw.jpg",   30:"30__dsf7929_dxo.jpg",
+  31:"31__dsf6065_dxo.jpg",    32:"32__dsf6588_dxo.jpg",    33:"33_0911251107.jpg",
+  34:"34__dsf6035_dxo.jpg",    35:"35__dsf9098.jpg",        36:"36__dsf8291_dxo_afterword.jpg"
+};
+
+const blank   = `<div class="colophon"></div>`;
+const plateR  = n => `<div class="plate"><img loading="lazy" src="${P(IMG[n])}"></div><div class="folio recto">${n===36?"afterword":n}</div>`;
+const plateL  = n => `<div class="plate"><img loading="lazy" src="${P(IMG[n])}"></div><div class="folio verso">${n}</div>`;
+const spL = n => `<div class="sp"><div class="wrap"><img loading="lazy" src="${P(IMG[n])}"></div></div>`;
+const spR = n => `<div class="sp righthalf"><div class="wrap"><img loading="lazy" src="${P(IMG[n])}"></div></div>`;
+
+// The book as spreads: {l, r, label}
+const S = [];
+S.push({ l:null, r:`<div class="plate fullbleed"><img src="${P("cover.jpg")}"></div>`, label:"COVER" });
+S.push({ l:blank, r:`<div class="titlepage"><div class="t">BUSY<br>FOR<br>YOU</div><div class="a">LOUIS ROYER</div></div>`, label:"TITLE" });
+S.push({ l:blank, r:`<div class="statement">
+  <p>The photographs in this book were made between 2023 and 2026, in Peru, Japan, France, China, Hong Kong and Singapore. The places matter less than what repeats across them: people held inside the structures built around them &mdash; windows, doorways, platforms, glass &mdash; waiting, or working. I photographed strangers the way architecture sees them: anonymous, patient, briefly framed. Nothing was staged and nothing was asked. The book only watches, from the same distance we all keep in cities, and finds in that distance a kind of tenderness.</p>
+  <p class="fr">Les photographies de ce livre ont &eacute;t&eacute; faites entre 2023 et 2026, au P&eacute;rou, au Japon, en France, en Chine, &agrave; Hong Kong et &agrave; Singapour. Les lieux comptent moins que ce qui s&rsquo;y r&eacute;p&egrave;te&nbsp;: des gens tenus dans les structures b&acirc;ties autour d&rsquo;eux &mdash; fen&ecirc;tres, portes, quais, vitres &mdash; qui attendent, ou qui travaillent. J&rsquo;ai photographi&eacute; des inconnus comme l&rsquo;architecture les voit&nbsp;: anonymes, patients, bri&egrave;vement encadr&eacute;s. Rien n&rsquo;a &eacute;t&eacute; mis en sc&egrave;ne, rien n&rsquo;a &eacute;t&eacute; demand&eacute;. Ce livre ne fait que regarder, &agrave; la distance que nous gardons tous dans les villes, et trouve dans cette distance une forme de tendresse.</p>
+</div>`, label:"APPROACH" });
+
+const single = n => S.push({ l:blank, r:plateR(n), label:"PLATE "+n });
+const pair   = (a,b) => S.push({ l:plateL(a), r:plateR(b), label:"PLATES "+a+" | "+b });
+
+single(1); single(2); single(3); single(4);
+single(5); single(6);
+S.push({ l:spL(7), r:spR(7), label:"PLATE 7 — PANORAMA SPREAD" });   // level crossing, uncropped
+single(8); single(9); single(10); single(11); single(12);
+single(13); single(14);
+single(15);
+S.push({ l:spL(16), r:spR(16), label:"PLATE 16 — SPREAD" }); // Kanegafuchi night, uncropped, full page height
+single(17); single(18);
+single(19);                                                   // color plate, alone
+single(20); single(21);
+single(22);                                                   // porters, alone
+single(23); single(24);
+for (let n=25; n<=36; n++) single(n);
+// ----- notes pages: miniatures with editable captions, 6 per page, 3 spreads -----
+const LSC = JSON.parse(localStorage.getItem("bfy-captions")||"{}");
+const CAP = {};
+for (let n=1; n<=36; n++) CAP[n] = Object.assign({place:"",year:"",text:""}, (window.CAPTIONS||{})[n]||{}, LSC[n]||{});
+const noteRow = n => `
+  <div class="note" data-n="${n}">
+    <div class="thumb"><img loading="lazy" src="${P(IMG[n])}"></div>
+    <div class="nmeta">
+      <div class="nhead"><span class="nplace" data-f="place">${CAP[n].place}</span><span class="nyear" data-f="year">${CAP[n].year}</span></div>
+      <div class="ntext" data-f="text">${CAP[n].text}</div>
+    </div>
+  </div>`;
+const notesPage = from => {
+  let h = `<div class="notes">`;
+  for (let n=from; n<from+6 && n<=36; n++) h += noteRow(n);
+  return h + `</div>`;
+};
+for (let g=0; g<3; g++){
+  S.push({ l:notesPage(g*12+1), r:notesPage(g*12+7), label:"NOTES "+(g*12+1)+"–"+Math.min(g*12+12,36) });
+}
+
+S.push({ l:blank, r:`<div class="colophon">BUSY FOR YOU<br>36 PHOTOGRAPHS &middot; 2023&ndash;2026<br>MAQUETTE &mdash; NOT FOR SALE</div>`, label:"COLOPHON" });
+
+// spreads -> sheets: sheet j = { front: S[j].r, back: S[j+1] ? S[j+1].l : backcover }
+const book = document.getElementById("book");
+const sheets = [];
+for (let j = 0; j < S.length; j++){
+  const s = document.createElement("div"); s.className = "sheet";
+  const f = document.createElement("div"); f.className = "face front"; f.innerHTML = S[j].r;
+  const b = document.createElement("div"); b.className = "face back";
+  b.innerHTML = (j + 1 < S.length) ? (S[j+1].l ?? blank)
+              : `<div class="backcover"><div class="mark">BUSY FOR YOU</div></div>`;
+  s.appendChild(f); s.appendChild(b); book.appendChild(s); sheets.push(s);
+}
+
+const N = sheets.length;
+let pos = 0;
+
+function zApply(){
+  sheets.forEach((s,i)=>{ s.style.zIndex = s.classList.contains("turned") ? i + 1 : N - i + 1; });
+}
+function counter(){
+  const c = document.getElementById("counter");
+  c.textContent = (pos >= N) ? "END" : S[pos].label;
+}
+function turn(dir){
+  const i = dir > 0 ? pos : pos - 1;
+  if (i < 0 || i >= N) return;
+  const s = sheets[i];
+  s.style.zIndex = N + 5;
+  book.classList.add("turning");
+  s.addEventListener("transitionend", ()=>{ zApply(); book.classList.remove("turning"); }, { once:true });
+  setTimeout(()=>{ zApply(); book.classList.remove("turning"); }, 1100);  // safety net
+  pos += dir;
+  sheets.forEach((sh,k)=> sh.classList.toggle("turned", k < pos));
+  counter();
+}
+
+document.getElementById("next").onclick = ()=> turn(1);
+document.getElementById("prev").onclick = ()=> turn(-1);
+document.addEventListener("keydown", e=>{
+  if (e.target.isContentEditable) return;
+  if (e.key === "ArrowRight") turn(1);
+  if (e.key === "ArrowLeft") turn(-1);
+});
+book.addEventListener("click", e=>{
+  if (document.body.classList.contains("editing")) return;
+  const r = book.getBoundingClientRect();
+  turn(e.clientX > r.left + r.width/2 ? 1 : -1);
+});
+
+sheets.forEach((s,i)=> s.classList.toggle("turned", i < pos));
+zApply(); counter();
+
+// ----- interactive caption editing -----
+const editbtn = document.getElementById("editbtn");
+const exportbtn = document.getElementById("exportbtn");
+function setEditable(on){
+  document.querySelectorAll(".note [data-f]").forEach(el=> el.setAttribute("contenteditable", on ? "true" : "false"));
+}
+editbtn.onclick = ()=>{
+  const on = !document.body.classList.contains("editing");
+  document.body.classList.toggle("editing", on);
+  editbtn.classList.toggle("on", on);
+  setEditable(on);
+};
+book.addEventListener("input", e=>{
+  const f = e.target.closest("[data-f]"); if(!f) return;
+  const n = f.closest(".note").dataset.n;
+  const store = JSON.parse(localStorage.getItem("bfy-captions")||"{}");
+  store[n] = store[n] || {};
+  store[n][f.dataset.f] = f.innerText;
+  localStorage.setItem("bfy-captions", JSON.stringify(store));
+});
+exportbtn.onclick = ()=>{
+  const out = {};
+  document.querySelectorAll(".note").forEach(nd=>{
+    out[nd.dataset.n] = {
+      place: nd.querySelector('[data-f="place"]').innerText.trim(),
+      year:  nd.querySelector('[data-f="year"]').innerText.trim(),
+      text:  nd.querySelector('[data-f="text"]').innerText.trim()
+    };
+  });
+  const blob = new Blob(["window.CAPTIONS = " + JSON.stringify(out, null, 2) + ";\n"], {type:"text/javascript"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "captions.js"; a.click();
+};
+</script>
+</body>
+</html>
