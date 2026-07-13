@@ -14,7 +14,7 @@ window.CAPTIONS = {
   "3": {
     "place": "AREQUIPA, PERU",
     "year": "2026",
-    "text_en": "In the footsteps of the ancients, the path reveals itself, and the horizon ceases to tremble.",
+    "text_en": "In the footsteps of the elders, the path reveals itself, and the horizon ceases to tremble.",
     "text_fr": "Dans les pas des anciens, le chemin se révèle, et l’horizon cesse de trembler."
   },
   "4": {
