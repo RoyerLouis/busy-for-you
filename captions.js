@@ -2,7 +2,7 @@ window.CAPTIONS = {
   "1": {
     "place": "OSAKA, JAPAN",
     "year": "2024",
-    "text": ""
+    "text": "Présent, absent, en suspend, il sera la pour la prochaine pluie, occupé à t'attendre."
   },
   "2": {
     "place": "LIMA, PERU",
@@ -12,7 +12,7 @@ window.CAPTIONS = {
   "3": {
     "place": "AREQUIPA, PERU",
     "year": "2026",
-    "text": ""
+    "text": "Dans les pas des anciens, le chemin se révèle, et l’horizon cesse de trembler."
   },
   "4": {
     "place": "LIMA, PERU",
@@ -37,7 +37,7 @@ window.CAPTIONS = {
   "8": {
     "place": "TOKYO, JAPAN",
     "year": "2024",
-    "text": ""
+    "text": "Matin ou soir, éveil ou repos, le calme, presque."
   },
   "9": {
     "place": "PARIS, FRANCE",
