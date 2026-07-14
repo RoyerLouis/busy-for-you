@@ -8,8 +8,8 @@ window.CAPTIONS = {
   "2": {
     "place": "LIMA, PERU",
     "year": "2026",
-    "text_en": "",
-    "text_fr": ""
+    "text_en": "Hidden from the world, the world seems wonderful. Traveling through it, the world truly is.",
+    "text_fr": "Caché du monde, le monde semble merveilleux. En voyageant, le monde l'est."
   },
   "3": {
     "place": "AREQUIPA, PERU",
@@ -20,8 +20,8 @@ window.CAPTIONS = {
   "4": {
     "place": "LIMA, PERU",
     "year": "2026",
-    "text_en": "",
-    "text_fr": ""
+    "text_en": "Envious of those shoes, he comes to get his polished.",
+    "text_fr": "Envieux de ces chaussures, il vient se les faire cirer."
   },
   "5": {
     "place": "OSAKA, JAPAN",
@@ -32,8 +32,8 @@ window.CAPTIONS = {
   "6": {
     "place": "JAPAN",
     "year": "2024",
-    "text_en": "",
-    "text_fr": ""
+    "text_en": "Tomorrow. Today. One day. I work.",
+    "text_fr": "Demain. Aujourd’hui. Un jour. Je travaille."
   },
   "7": {
     "place": "TOKYO, JAPAN",
@@ -50,8 +50,8 @@ window.CAPTIONS = {
   "9": {
     "place": "PARIS, FRANCE",
     "year": "2023",
-    "text_en": "",
-    "text_fr": ""
+    "text_en": "Where boredom reigns, the phone captivates.",
+    "text_fr": "Là où l’ennui règne, le téléphone captive."
   },
   "10": {
     "place": "SACLAY, FRANCE",
@@ -116,8 +116,8 @@ window.CAPTIONS = {
   "20": {
     "place": "TIANMENSHAN, CHINA",
     "year": "2025",
-    "text_en": "",
-    "text_fr": ""
+    "text_en": "Where do we come from? Where are we going? Nice view.",
+    "text_fr": "D'où vient-on ? Où va-t-on ? La vue est belle."
   },
   "21": {
     "place": "TIANMENSHAN, CHINA",
