@@ -192,6 +192,43 @@
   .exit-link::after{ transform:rotate(-45deg); }
   .exit-link:hover{ color:#f7f5f1; background:rgba(255,255,255,.08); transform:rotate(90deg); }
   .exit-link:focus-visible{ outline:1px solid #d8d4cc; outline-offset:3px; }
+
+  /* enlarged caption view (click a notes thumbnail) */
+  .note .thumb{ cursor:zoom-in; }
+  #lightbox{
+    position:fixed; inset:0; z-index:2000; display:none;
+    align-items:center; justify-content:center;
+    background:#0f0e0d; padding:5vmin;
+  }
+  #lightbox.open{ display:flex; }
+  .lb-inner{
+    display:flex; align-items:center; justify-content:center;
+    gap:min(5vw,48px); max-width:94vw; max-height:92vh;
+  }
+  .lb-img{ display:flex; align-items:center; justify-content:center; min-width:0; }
+  .lb-img img{ max-width:60vw; max-height:88vh; object-fit:contain; box-shadow:0 10px 40px rgba(0,0,0,.6); }
+  .lb-cap{ flex:0 0 clamp(220px,26vw,380px); color:#cfcac1; font-weight:300; }
+  .lb-head{ font-size:14px; letter-spacing:.12em; color:#9a958c; margin-bottom:1.4em; }
+  .lb-head .lb-place{ text-transform:uppercase; }
+  .lb-head .lb-year{ color:#6f6b64; margin-left:.9em; }
+  .lb-text{ font-size:clamp(15px,1.5vw,19px); line-height:1.6; color:#e8e4dc; }
+  .lb-text.alt{ font-style:italic; color:#9f9a91; margin-top:1em; }
+  .lb-text:empty{ min-height:.6em; }
+  #lightbox [contenteditable="true"]{ outline:1px dashed #b9b19e; outline-offset:3px; cursor:text; }
+  .lb-close{
+    position:fixed; top:22px; right:24px; z-index:2100;
+    width:42px; height:42px; display:grid; place-items:center;
+    background:none; border:0; cursor:pointer; color:#aaa59d;
+  }
+  .lb-close::before, .lb-close::after{ content:""; position:absolute; width:24px; height:1px; background:currentColor; }
+  .lb-close::before{ transform:rotate(45deg); }
+  .lb-close::after{ transform:rotate(-45deg); }
+  .lb-close:hover{ color:#f7f5f1; }
+  @media (max-aspect-ratio:1/1){
+    .lb-inner{ flex-direction:column; gap:4vmin; }
+    .lb-img img{ max-width:88vw; max-height:52vh; }
+    .lb-cap{ flex:0 0 auto; max-width:88vw; }
+  }
 </style>
 </head>
 <body>
@@ -210,6 +247,18 @@
   <button id="next">TURN &#8594;</button>
   <button id="editbtn">&#9998; EDIT NOTES</button>
   <button id="exportbtn">&#8595; SAVE CAPTIONS FILE</button>
+</div>
+
+<div id="lightbox" aria-hidden="true">
+  <button class="lb-close" type="button" aria-label="Close enlarged view"></button>
+  <div class="lb-inner">
+    <div class="lb-img"><img alt=""></div>
+    <div class="lb-cap">
+      <div class="lb-head"><span class="lb-place" data-f="place"></span><span class="lb-year" data-f="year"></span></div>
+      <div class="lb-text" data-f="text_fr"></div>
+      <div class="lb-text alt" data-f="text_en"></div>
+    </div>
+  </div>
 </div>
 
 <script src="captions.js"></script>
@@ -346,7 +395,7 @@ if (_ep.has("edit"))   localStorage.setItem("bfy-editor", "1");
 if (_ep.has("noedit")) localStorage.removeItem("bfy-editor");
 if (localStorage.getItem("bfy-editor") === "1") editbtn.style.display = "inline-block";
 function setEditable(on){
-  document.querySelectorAll(".note [data-f]").forEach(el=> el.setAttribute("contenteditable", on ? "true" : "false"));
+  document.querySelectorAll(".note [data-f], #lightbox [data-f]").forEach(el=> el.setAttribute("contenteditable", on ? "true" : "false"));
 }
 editbtn.onclick = ()=>{
   const on = !document.body.classList.contains("editing");
@@ -376,6 +425,50 @@ exportbtn.onclick = ()=>{
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = "captions.js"; a.click();
 };
+
+// ----- enlarged caption view (lightbox) -----
+const lightbox = document.getElementById("lightbox");
+const lbImg = lightbox.querySelector(".lb-img img");
+function openLightbox(n){
+  const note = document.querySelector('.note[data-n="'+n+'"]');
+  if(!note) return;
+  lightbox.dataset.n = n;
+  lbImg.src = P(IMG[n]);
+  const editing = document.body.classList.contains("editing");
+  lightbox.querySelectorAll("[data-f]").forEach(el=>{
+    const src = note.querySelector('[data-f="'+el.dataset.f+'"]');
+    el.innerText = src ? src.innerText : "";
+    el.setAttribute("contenteditable", editing ? "true" : "false");
+  });
+  lightbox.classList.add("open");
+  lightbox.setAttribute("aria-hidden","false");
+}
+function closeLightbox(){
+  lightbox.classList.remove("open");
+  lightbox.setAttribute("aria-hidden","true");
+}
+// open on thumbnail click; capture phase + stopPropagation so the page doesn't turn
+book.addEventListener("click", e=>{
+  const thumb = e.target.closest(".note .thumb");
+  if(!thumb) return;
+  e.stopPropagation();
+  openLightbox(thumb.closest(".note").dataset.n);
+}, true);
+// edits in the enlarged view mirror back into the note row and the draft store
+lightbox.addEventListener("input", e=>{
+  const f = e.target.closest("[data-f]"); if(!f) return;
+  const n = lightbox.dataset.n, key = f.dataset.f, val = f.innerText;
+  const cell = document.querySelector('.note[data-n="'+n+'"] [data-f="'+key+'"]');
+  if(cell) cell.innerText = val;
+  const store = JSON.parse(localStorage.getItem("bfy-captions")||"{}");
+  store[n] = store[n] || {}; store[n][key] = val;
+  localStorage.setItem("bfy-captions", JSON.stringify(store));
+});
+lightbox.querySelector(".lb-close").addEventListener("click", closeLightbox);
+lightbox.addEventListener("click", e=>{ if(e.target === lightbox) closeLightbox(); });
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+});
 </script>
 </body>
 </html>
